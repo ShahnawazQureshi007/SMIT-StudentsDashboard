@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import matplotlib as plt
 import seaborn as sns
 
 # Set Page Config
@@ -60,3 +60,4 @@ st.pyplot(fig3)
 # Footer
 st.markdown("---")
 st.markdown("Built by *Ahmed Sabur* • Powered by Streamlit & Matplotlib")
+
