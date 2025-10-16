@@ -1,7 +1,11 @@
+import os
+os.system("pip install matplotlib seaborn pandas streamlit --quiet")
+
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 
 # Set Page Config
 st.set_page_config(page_title="Student Performance Dashboard For TITAN SUKKUR ", layout="wide")
@@ -60,5 +64,6 @@ st.pyplot(fig3)
 # Footer
 st.markdown("---")
 st.markdown("Built by *Ahmed Sabur* • Powered by Streamlit & Matplotlib")
+
 
 
