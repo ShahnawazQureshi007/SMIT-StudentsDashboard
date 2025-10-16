@@ -1,53 +1,62 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Page setup
-st.set_page_config(page_title="Student Performance Dashboard", layout="wide")
+# Set Page Config
+st.set_page_config(page_title="Student Performance Dashboard For TITAN SUKKUR ", layout="wide")
 
-# Load dataset
+# Load Dataset
 @st.cache_data
 def load_data():
-    return pd.read_csv("StudentsPerformance.csv")
+    df = pd.read_csv("StudentsPerformance.csv")
+    return df
 
 df = load_data()
 
+# Title
+st.title("📊 Student Performance Visualization Dashboard")
+st.markdown("Use filters to explore the dataset interactively!")
+
 # Sidebar filters
-st.sidebar.header("🔍 Filter Options")
-gender = st.sidebar.multiselect("Gender", df["gender"].unique(), default=df["gender"].unique())
-prep = st.sidebar.multiselect("Test Preparation", df["test preparation course"].unique(), default=df["test preparation course"].unique())
-parent_edu = st.sidebar.multiselect("Parental Education", df["parental level of education"].unique(), default=df["parental level of education"].unique())
+st.sidebar.header("Filter Data")
+gender = st.sidebar.multiselect("Select Gender:", df["gender"].unique(), default=df["gender"].unique())
+test = st.sidebar.multiselect("Select Test Preparation:", df["test preparation course"].unique(), default=df["test preparation course"].unique())
+education = st.sidebar.multiselect("Parent Education Level:", df["parental level of education"].unique(), default=df["parental level of education"].unique())
 
 filtered_df = df[
     (df["gender"].isin(gender)) &
-    (df["test preparation course"].isin(prep)) &
-    (df["parental level of education"].isin(parent_edu))
+    (df["test preparation course"].isin(test)) &
+    (df["parental level of education"].isin(education))
 ]
 
-st.title("📊 Student Performance Dashboard (Plotly Edition)")
-st.markdown("### Explore the Kaggle dataset interactively with dynamic visualizations!")
+st.dataframe(filtered_df.head())
 
-# KPI cards
+# KPI summary
+st.subheader("Summary Statistics")
 col1, col2, col3 = st.columns(3)
 col1.metric("Average Math Score", round(filtered_df["math score"].mean(), 2))
 col2.metric("Average Reading Score", round(filtered_df["reading score"].mean(), 2))
 col3.metric("Average Writing Score", round(filtered_df["writing score"].mean(), 2))
 
-st.divider()
+# Visual 1
+st.subheader("Average Scores by Gender")
+fig1, ax1 = plt.subplots()
+sns.barplot(x="gender", y="math score", data=filtered_df, ci=None, ax=ax1)
+st.pyplot(fig1)
 
-# Visualization 1
-fig1 = px.histogram(filtered_df, x="math score", color="gender", nbins=20, title="Distribution of Math Scores")
-st.plotly_chart(fig1, use_container_width=True)
+# Visual 2
+st.subheader("Distribution of Reading Scores")
+fig2, ax2 = plt.subplots()
+sns.histplot(filtered_df["reading score"], bins=20, kde=True, ax=ax2)
+st.pyplot(fig2)
 
-# Visualization 2
-fig2 = px.box(filtered_df, x="parental level of education", y="reading score", color="gender", title="Reading Scores by Parental Education")
-st.plotly_chart(fig2, use_container_width=True)
-
-# Visualization 3
-fig3 = px.scatter(filtered_df, x="math score", y="writing score", color="gender", size="reading score",
-                  hover_data=["test preparation course"], title="Math vs Writing Scores Correlation")
-st.plotly_chart(fig3, use_container_width=True)
+# Visual 3
+st.subheader("Correlation Heatmap")
+fig3, ax3 = plt.subplots()
+sns.heatmap(filtered_df[["math score", "reading score", "writing score"]].corr(), annot=True, cmap="coolwarm", ax=ax3)
+st.pyplot(fig3)
 
 # Footer
-st.divider()
-st.markdown("Built by **Ahmed Sabur** | Powered by Streamlit + Plotly")
+st.markdown("---")
+st.markdown("Built by *Ahmed Sabur* • Powered by Streamlit & Matplotlib")
